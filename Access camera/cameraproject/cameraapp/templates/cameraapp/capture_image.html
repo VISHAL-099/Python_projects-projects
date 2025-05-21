@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Image</title>
+</head>
+<body>
+    <h1>Capture Image</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture</button>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+    <form id="imageForm" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="imageData" name="imageData">
+        <button type="submit">Save Image</button>
+    </form>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const imageDataInput = document.getElementById('imageData');
+        const context = canvas.getContext('2d');
+
+        // Access the user's camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(error => {
+                console.error('Error accessing camera:', error);
+            });
+
+        // Capture the image when the button is clicked
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            imageDataInput.value = imageData;
+        });
+    </script>
+</body>
+</html>
